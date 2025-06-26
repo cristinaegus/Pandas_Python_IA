@@ -1,0 +1,26 @@
+# Virtual environment
+venv_pandas/
+.venv/
+env/
+ENV/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Data files (opcional - descomenta si no quieres subir archivos de datos)
+# *.csv
+# *.xlsx
+# *.xls
