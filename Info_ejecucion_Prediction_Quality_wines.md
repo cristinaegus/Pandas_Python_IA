@@ -42,4 +42,28 @@ Ahora voy a configurar el notebook para usar el entorno correcto: Ahora voy a in
 - Todas las librerías se importaron sin errores
 - Estás listo para comenzar el análisis de calidad de vinos con machine learning
 
-¡Ahora puedes continuar con tu proyecto de predicción de calidad de vinos sin problemas!
+----------------------------------------------------------------
+Modificaciones en el Grafico sns.heatmap para que se vean los numeros mejor y 
+no tan apelotonados 
+
+``
+¡Perfecto! He mejorado el heatmap para que los números se vean mucho mejor y no aparezcan tan juntos. Los cambios implementados incluyen:
+
+### 🎨 **Mejoras aplicadas:**
+
+1. **Tamaño de figura aumentado**: `plt.figure(figsize=(12, 10))` - Hace el gráfico más grande
+2. **Formato de números**: `fmt='.2f'` - Muestra solo 2 decimales para mayor claridad
+3. **Tamaño de fuente optimizado**: `annot_kws={'size': 8}` - Ajusta el tamaño de los números
+4. **Celdas cuadradas**: `square=True` - Hace que todas las celdas tengan la misma forma
+5. **Líneas separadoras**: `linewidths=0.5` - Añade líneas entre celdas para mejor separación
+6. **Título descriptivo**: Añadido con buen espaciado
+7. **Layout automático**: `plt.tight_layout()` - Optimiza el espacio automáticamente
+
+### 📊 **Resultado:**
+- ✅ Los números ahora tienen más espacio y se leen claramente
+- ✅ Mejor separación visual entre las celdas
+- ✅ Formato más profesional y limpio
+- ✅ Tamaño optimizado para pantalla
+- ✅ Números con precisión adecuada (2 decimales)
+
+Ahora cuando ejecutes esta celda, tendrás un heatmap mucho más legible donde podrás ver claramente las correlaciones entre todas las variables del dataset de vinos sin que los números se superpongan o se vean apretujados.
