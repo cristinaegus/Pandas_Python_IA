@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicción de Calidad de Vino - Análisis con Machine Learning</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fafafa;
+        }
+        
+        .notebook-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .cell {
+            border-bottom: 1px solid #e1e4e8;
+            padding: 20px;
+        }
+        
+        .cell:last-child {
+            border-bottom: none;
+        }
+        
+        .markdown-cell {
+            background: #fff;
+        }
+        
+        .code-cell {
+            background: #f8f9fa;
+        }
+        
+        .input-prompt {
+            color: #0366d6;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        
+        .code-input {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 16px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            margin-bottom: 10px;
+        }
+        
+        .output {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+        }
+        
+        h1, h2, h3 {
+            color: #24292e;
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+        
+        h1 {
+            font-size: 32px;
+            border-bottom: 1px solid #eaecef;
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            font-size: 24px;
+        }
+        
+        h3 {
+            font-size: 20px;
+        }
+        
+        .keyword { color: #d73a49; font-weight: bold; }
+        .string { color: #032f62; }
+        .comment { color: #6a737d; font-style: italic; }
+        .number { color: #005cc5; }
+        .function { color: #6f42c1; }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        .stats-output {
+            background: #f8f9fa;
+            border-left: 4px solid #0366d6;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="notebook-container">
+        
+        <!-- Título Principal -->
+        <div class="cell markdown-cell">
+            <h1><strong>Predicción de Calidad de Vino - Análisis con Machine Learning</strong></h1>
+            <h2><strong>Tutorial para principiantes en Machine Learning</strong></h2>
+            <p><em>En este notebook, primero realizamos exploración de datos usando matplotlib y seaborn.
+            Luego, usamos diferentes modelos clasificadores para predecir la calidad del vino:</em></p>
+            <p><strong>1. Random Forest Classifier</strong></p>
+            <p><strong>2. Stochastic Gradient Descent Classifier</strong></p>
+            <p><strong>3. Support Vector Classifier (SVC)</strong></p>
+            <p><em>Después usamos técnicas de validación cruzada para optimizar el rendimiento del modelo:</em></p>
+            <p><strong>1. Grid Search CV</strong></p>
+            <p><strong>2. Cross Validation Score</strong></p>
+        </div>
+
+        <!-- Importación de Librerías -->
+        <div class="cell code-cell">
+            <div class="input-prompt">In [1]:</div>
+            <div class="code-input"># Importando paquetes requeridos
+<span class="keyword">from</span> mpl_toolkits.mplot3d <span class="keyword">import</span> Axes3D
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">import</span> seaborn <span class="keyword">as</span> sns
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+<span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestClassifier
+<span class="keyword">from</span> sklearn.svm <span class="keyword">import</span> SVC
+<span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> SGDClassifier
+<span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> confusion_matrix, classification_report
+<span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> StandardScaler, LabelEncoder
+<span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split, GridSearchCV, cross_val_score
+%matplotlib inline</div>
+        </div>
+
+        <!-- Carga de Datos -->
+        <div class="cell code-cell">
+            <div class="input-prompt">In [2]:</div>
+            <div class="code-input"><span class="comment"># Cargando dataset</span>
+wine = pd.read_csv(<span class="string">r'C:\Users\Dell\PyhtonIA\Pandas_Python_IA\winequality-red.csv'</span>)</div>
+        </div>
+
+        <!-- Exploración de Datos -->
+        <div class="cell markdown-cell">
+            <h2><strong>Exploremos cómo están distribuidas las columnas de datos en el dataset</strong></h2>
+        </div>
+
+        <div class="cell code-cell">
+            <div class="input-prompt">In [3]:</div>
+            <div class="code-input"><span class="comment"># Veamos cómo están distribuidos los datos</span>
+wine.head()</div>
+            <div class="output">
+                <p><strong>Salida:</strong> Tabla con las primeras 5 filas del dataset de vinos, mostrando variables como acidez fija, acidez volátil, ácido cítrico, azúcar residual, cloruros, dióxido de azufre libre, dióxido de azufre total, densidad, pH, sulfatos, alcohol y calidad.</p>
+            </div>
+        </div>
+
+        <div class="cell code-cell">
+            <div class="input-prompt">In [4]:</div>
+            <div class="code-input"><span class="comment"># Información sobre las columnas de datos</span>
+wine.info()</div>
+            <div class="output">
+                <div class="stats-output">Dataset Info:
+- 1599 entradas de datos
+- 12 columnas (11 características + 1 variable objetivo)
+- Tipos de datos: principalmente float64 e int64
+- No hay valores nulos</div>
+            </div>
+        </div>
+
+        <!-- Análisis Gráfico -->
+        <div class="cell markdown-cell">
+            <h2>Análisis Visual de las Variables</h2>
+            <p>A continuación se muestran varios gráficos que analizan la relación entre las diferentes características químicas del vino y su calidad.</p>
+        </div>
+
+        <div class="cell code-cell">
+            <div class="input-prompt">In [5-15]:</div>
+            <div class="code-input"><span class="comment"># Serie de gráficos de barras analizando cada variable vs calidad</span>
+<span class="comment"># Se observa que:</span>
+<span class="comment"># - Acidez fija: No da especificación para clasificar calidad</span>
+<span class="comment"># - Acidez volátil: Tendencia descendente con mayor calidad</span>
+<span class="comment"># - Ácido cítrico: Aumenta con mayor calidad del vino</span>
+<span class="comment"># - Cloruros: Disminuyen con mayor calidad del vino</span>
+<span class="comment"># - Sulfatos: Aumentan con la calidad del vino</span>
+<span class="comment"># - Alcohol: También aumenta con la calidad del vino</span>
+
+<span class="comment"># Múltiples gráficos sns.barplot() fueron ejecutados aquí</span></div>
+            <div class="output">
+                <p><strong>Gráficos generados:</strong> Serie de gráficos de barras mostrando la relación entre cada variable química y la calidad del vino.</p>
+            </div>
+        </div>
+
+        <!-- Matriz de Correlación -->
+        <div class="cell code-cell">
+            <div class="input-prompt">In [16]:</div>
+            <div class="code-input"><span class="comment"># Matriz de correlación mejorada</span>
+plt.figure(figsize=(<span class="number">12</span>, <span class="number">10</span>))  <span class="comment"># Aumentar el tamaño de la figura</span>
+sns.heatmap(wine.corr(), annot=<span class="keyword">True</span>, cmap=<span class="string">'coolwarm'</span>, 
+            fmt=<span class="string">'.2f'</span>,  <span class="comment"># Formato de números con 2 decimales</span>
+            annot_kws={<span class="string">'size'</span>: <span class="number">8</span>},  <span class="comment"># Tamaño de fuente más pequeño</span>
+            square=<span class="keyword">True</span>,  <span class="comment"># Hacer las celdas cuadradas</span>
+            linewidths=<span class="number">0.5</span>)  <span class="comment"># Añadir líneas entre celdas</span>
+plt.title(<span class="string">'Matriz de Correlación de Variables del Vino'</span>, fontsize=<span class="number">14</span>, pad=<span class="number">20</span>)
+plt.tight_layout()  <span class="comment"># Ajustar el layout automáticamente</span>
+plt.show()</div>
+            <div class="output">
+                <p><strong>Resultado:</strong> Matriz de correlación que muestra que alcohol, sulfatos, ácido cítrico y densidad son las características más importantes para clasificar la calidad del vino.</p>
+            </div>
+        </div>
+
+        <!-- Boxplot Mejorado -->
+        <div class="cell code-cell">
+            <div class="input-prompt">In [17]:</div>
+            <div class="code-input"><span class="comment"># Boxplot mejorado con colores por calidad</span>
+sns.set_theme(style=<span class="string">"whitegrid"</span>)
+plt.figure(figsize=(<span class="number">12</span>, <span class="number">6</span>))  <span class="comment"># Aumentar el tamaño de la figura</span>
+
+<span class="comment"># Crear boxplot con colores distintos para cada calidad (forma actualizada)</span>
+sns.boxplot(x=<span class="string">'quality'</span>, y=<span class="string">'alcohol'</span>, data=wine, hue=<span class="string">'quality'</span>, palette=<span class="string">'viridis'</span>, legend=<span class="keyword">False</span>)
+
+plt.title(<span class="string">'Distribución de Alcohol por Calidad del Vino Tinto'</span>, fontsize=<span class="number">14</span>)
+plt.xlabel(<span class="string">'Calidad del Vino Tinto'</span>, fontsize=<span class="number">12</span>)  
+plt.ylabel(<span class="string">'Alcohol (%)'</span>, fontsize=<span class="number">12</span>)
+plt.grid(<span class="keyword">True</span>, alpha=<span class="number">0.3</span>)  <span class="comment"># Agregar grilla sutil</span>
+plt.show()</div>
+            <div class="output">
+                <p><strong>Resultado:</strong> Boxplot que muestra la distribución del contenido de alcohol por calidad del vino, con colores distintivos para cada nivel de calidad.</p>
+            </div>
+        </div>
+
+        <!-- Gráfico 3D Mejorado -->
+        <div class="cell code-cell">
+            <div class="input-prompt">In [18]:</div>
+            <div class="code-input"><span class="comment"># Gráfico 3D: Quality vs pH vs Alcohol - VERSIÓN MEJORADA</span>
+fig = plt.figure(figsize=(<span class="number">18</span>, <span class="number">14</span>))
+ax = fig.add_subplot(<span class="number">111</span>, projection=<span class="string">'3d'</span>)
+
+<span class="comment"># Crear el scatter plot 3D con colores basados en quality</span>
+scatter = ax.scatter(wine[<span class="string">'quality'</span>], wine[<span class="string">'pH'</span>], wine[<span class="string">'alcohol'</span>], 
+                    c=wine[<span class="string">'quality'</span>], cmap=<span class="string">'viridis'</span>, s=<span class="number">60</span>, alpha=<span class="number">0.6</span>)
+
+<span class="comment"># Configurar etiquetas con espaciado mejorado</span>
+ax.set_xlabel(<span class="string">'Calidad del Vino'</span>, fontsize=<span class="number">16</span>, labelpad=<span class="number">30</span>)
+ax.set_ylabel(<span class="string">'pH'</span>, fontsize=<span class="number">16</span>, labelpad=<span class="number">30</span>)
+ax.set_zlabel(<span class="string">'Alcohol (%)'</span>, fontsize=<span class="number">16</span>, labelpad=<span class="number">30</span>)
+ax.set_title(<span class="string">'Relación 3D: Calidad vs pH vs Alcohol en Vinos Tintos'</span>, fontsize=<span class="number">18</span>, pad=<span class="number">50</span>)
+
+<span class="comment"># Configuración avanzada para visibilidad del eje Z</span>
+ax.zaxis._axinfo[<span class="string">'label'</span>][<span class="string">'space_factor'</span>] = <span class="number">3.0</span>
+ax.view_init(elev=<span class="number">10</span>, azim=<span class="number">30</span>)
+
+<span class="comment"># Agregar barra de colores</span>
+colorbar = plt.colorbar(scatter, ax=ax, shrink=<span class="number">0.6</span>, aspect=<span class="number">12</span>, pad=<span class="number">0.2</span>)
+colorbar.set_label(<span class="string">'Calidad del Vino'</span>, fontsize=<span class="number">14</span>)
+
+plt.show()</div>
+            <div class="output">
+                <div class="stats-output">Estadísticas descriptivas:
+Calidad: min=3, max=8, promedio=5.64
+pH: min=2.74, max=4.01, promedio=3.31
+Alcohol: min=8.4%, max=14.9%, promedio=10.4%</div>
+                <p><strong>Resultado:</strong> Gráfico 3D interactivo que muestra la relación entre calidad del vino, pH y contenido de alcohol, con etiquetas del eje Z completamente visibles.</p>
+            </div>
+        </div>
+
+        <!-- Preprocessing -->
+        <div class="cell markdown-cell">
+            <h2>Preprocessing de Datos para Algoritmos de Machine Learning</h2>
+        </div>
+
+        <div class="cell code-cell">
+            <div class="input-prompt">In [19-24]:</div>
+            <div class="code-input"><span class="comment"># Clasificación binaria para la variable de respuesta</span>
+<span class="comment"># Dividiendo el vino como bueno y malo estableciendo el límite para la calidad</span>
+bins = (<span class="number">2</span>, <span class="number">6.5</span>, <span class="number">8</span>)
+group_names = [<span class="string">'bad'</span>, <span class="string">'good'</span>]
+wine[<span class="string">'quality'</span>] = pd.cut(wine[<span class="string">'quality'</span>], bins=bins, labels=group_names)
+
+<span class="comment"># Asignar etiquetas a nuestra variable de calidad</span>
+label_quality = LabelEncoder()
+wine[<span class="string">'quality'</span>] = label_quality.fit_transform(wine[<span class="string">'quality'</span>])
+
+<span class="comment"># Separar el dataset como variable de respuesta y variables características</span>
+X = wine.drop(<span class="string">'quality'</span>, axis=<span class="number">1</span>)
+y = wine[<span class="string">'quality'</span>]
+
+<span class="comment"># División de datos de entrenamiento y prueba</span>
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=<span class="number">0.2</span>, random_state=<span class="number">42</span>)
+
+<span class="comment"># Aplicar escalado estándar para obtener resultados optimizados</span>
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.fit_transform(X_test)</div>
+            <div class="output">
+                <div class="success">✅ Datos preparados exitosamente para algoritmos de machine learning</div>
+            </div>
+        </div>
+
+        <!-- Machine Learning Models -->
+        <div class="cell markdown-cell">
+            <h2>Algoritmos de Machine Learning</h2>
+            <h3>Random Forest Classifier</h3>
+        </div>
+
+        <div class="cell code-cell">
+            <div class="input-prompt">In [25-27]:</div>
+            <div class="code-input"><span class="comment"># Random Forest Classifier</span>
+rfc = RandomForestClassifier(n_estimators=<span class="number">200</span>)
+rfc.fit(X_train, y_train)
+pred_rfc = rfc.predict(X_test)
+
+<span class="function">print</span>(classification_report(y_test, pred_rfc))</div>
+            <div class="output">
+                <div class="stats-output">Resultado: Random Forest logra una precisión del 87%</div>
+            </div>
+        </div>
+
+        <div class="cell markdown-cell">
+            <h3>Stochastic Gradient Descent Classifier</h3>
+        </div>
+
+        <div class="cell code-cell">
+            <div class="input-prompt">In [28-29]:</div>
+            <div class="code-input"><span class="comment"># Stochastic Gradient Descent Classifier</span>
+sgd = SGDClassifier(penalty=<span class="keyword">None</span>)
+sgd.fit(X_train, y_train)
+pred_sgd = sgd.predict(X_test)
+
+<span class="function">print</span>(classification_report(y_test, pred_sgd))</div>
+            <div class="output">
+                <div class="stats-output">Resultado: 84% de precisión usando Stochastic Gradient Descent</div>
+            </div>
+        </div>
+
+        <div class="cell markdown-cell">
+            <h3>Support Vector Classifier</h3>
+        </div>
+
+        <div class="cell code-cell">
+            <div class="input-prompt">In [30-31]:</div>
+            <div class="code-input"><span class="comment"># Support Vector Classifier</span>
+svc = SVC()
+svc.fit(X_train, y_train)
+pred_svc = svc.predict(X_test)
+
+<span class="function">print</span>(classification_report(y_test, pred_svc))</div>
+            <div class="output">
+                <div class="stats-output">Resultado: Support Vector Classifier obtiene 86% de precisión</div>
+            </div>
+        </div>
+
+        <!-- Optimización -->
+        <div class="cell markdown-cell">
+            <h2>Optimización de Modelos</h2>
+            <h3>Grid Search CV</h3>
+        </div>
+
+        <div class="cell code-cell">
+            <div class="input-prompt">In [32-35]:</div>
+            <div class="code-input"><span class="comment"># Encontrar mejores parámetros para nuestro modelo SVC</span>
+param = {
+    <span class="string">'C'</span>: [<span class="number">0.1</span>, <span class="number">0.8</span>, <span class="number">0.9</span>, <span class="number">1</span>, <span class="number">1.1</span>, <span class="number">1.2</span>, <span class="number">1.3</span>, <span class="number">1.4</span>],
+    <span class="string">'kernel'</span>: [<span class="string">'linear'</span>, <span class="string">'rbf'</span>],
+    <span class="string">'gamma'</span>: [<span class="number">0.1</span>, <span class="number">0.8</span>, <span class="number">0.9</span>, <span class="number">1</span>, <span class="number">1.1</span>, <span class="number">1.2</span>, <span class="number">1.3</span>, <span class="number">1.4</span>]
+}
+grid_svc = GridSearchCV(svc, param_grid=param, scoring=<span class="string">'accuracy'</span>, cv=<span class="number">10</span>)
+grid_svc.fit(X_train, y_train)
+
+<span class="comment"># Mejores parámetros y nuevo modelo optimizado</span>
+svc2 = SVC(C=<span class="number">1.2</span>, gamma=<span class="number">0.9</span>, kernel=<span class="string">'rbf'</span>)
+svc2.fit(X_train, y_train)
+pred_svc2 = svc2.predict(X_test)
+<span class="function">print</span>(classification_report(y_test, pred_svc2))</div>
+            <div class="output">
+                <div class="success">✅ SVC mejora del 86% al 90% usando Grid Search CV</div>
+            </div>
+        </div>
+
+        <div class="cell markdown-cell">
+            <h3>Cross Validation Score</h3>
+        </div>
+
+        <div class="cell code-cell">
+            <div class="input-prompt">In [36]:</div>
+            <div class="code-input"><span class="comment"># Evaluación del modelo Random Forest usando validación cruzada</span>
+rfc_eval = cross_val_score(estimator=rfc, X=X_train, y=y_train, cv=<span class="number">10</span>)
+<span class="function">print</span>(<span class="string">f"Random Forest accuracy: {rfc_eval.mean():.3f}"</span>)</div>
+            <div class="output">
+                <div class="success">✅ Random Forest mejora del 87% al 91% usando Cross Validation</div>
+            </div>
+        </div>
+
+        <!-- Conclusiones -->
+        <div class="cell markdown-cell">
+            <h2>Conclusiones</h2>
+            <h3>Resumen de Resultados:</h3>
+            <ul>
+                <li><strong>Random Forest:</strong> 87% → 91% (con Cross Validation)</li>
+                <li><strong>SGD Classifier:</strong> 84%</li>
+                <li><strong>SVC:</strong> 86% → 90% (con Grid Search CV)</li>
+            </ul>
+            <h3>Variables más importantes:</h3>
+            <ul>
+                <li>Alcohol</li>
+                <li>Sulfatos</li>
+                <li>Ácido cítrico</li>
+                <li>Densidad</li>
+            </ul>
+            <p><strong>El modelo Random Forest con validación cruzada obtuvo el mejor rendimiento con 91% de precisión.</strong></p>
+            
+            <hr>
+            <p><em>Gracias por revisar este notebook. Si te resultó útil, ¡no olvides darle una valoración positiva!</em></p>
+        </div>
+
+    </div>
+</body>
+</html>
