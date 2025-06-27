@@ -227,3 +227,45 @@ sns.boxplot(x='quality', y='alcohol', data=wine, hue='quality')
 - **Resultado**: Cada categoría obtiene un color distintivo
 
 ¡Es una palabra muy usada en el mundo del color y diseño gráfico!
+
+----------------------------------------------------------------
+
+Hacer un grafico 3d que una estas tres caracteristicas , Calidad del Vino , porcentaje de alcohol en el vino  y pH del vino 
+
+
+![alt text](image-2.png)
+
+Voy a crear un gráfico 3D adaptado usando las columnas `quality`, `pH` y `alcohol` de tu dataset de vinos. Agregaré una nueva celda después de la celda del boxplot: 
+
+Se realizaron cambios.
+
+¡Perfecto! He creado un gráfico 3D adaptado específicamente para tu dataset de vinos. Aquí están las características del nuevo gráfico:
+
+### 🎯 **Adaptaciones realizadas:**
+
+1. **Variables específicas**: Usa `quality`, `pH` y `alcohol` de tu dataset
+2. **Colores por calidad**: Los puntos se colorean según la calidad del vino usando `cmap='viridis'`
+3. **Etiquetas en español**: Títulos y etiquetas traducidos y descriptivos
+4. **Barra de colores**: Incluye una leyenda que muestra la escala de calidad
+5. **Transparencia**: `alpha=0.6` para mejor visualización cuando hay superposición
+
+### 📊 **Características del gráfico:**
+
+- **Eje X**: Calidad del vino (3-8)
+- **Eje Y**: pH del vino
+- **Eje Z**: Porcentaje de alcohol
+- **Color**: Basado en la calidad (gradiente de colores)
+- **Tamaño**: Puntos de tamaño 60 para buena visibilidad
+
+### 🔧 **Funcionalidades adicionales:**
+
+- **Vista optimizada**: `ax.view_init(30, 45)` para el mejor ángulo
+- **Estadísticas**: Muestra min, max y promedio de cada variable
+- **Diseño profesional**: Tamaño de figura grande y layout ajustado
+
+### 🌈 **Interpretación visual:**
+- Los puntos más oscuros/claros representan diferentes calidades
+- Puedes ver patrones 3D entre pH, alcohol y calidad
+- Ideal para identificar clusters y relaciones complejas
+
+¡Ahora puedes ejecutar esta celda para ver una visualización tridimensional completa de tus datos de vino!
