@@ -172,6 +172,7 @@ Se realizaron cambios.
 
 ### 🔍 **Explicación del cambio:**
 
+
 **Antes (obsoleto):**
 ```python
 sns.boxplot(x='quality', y='alcohol', data=wine, palette='viridis')
@@ -197,3 +198,32 @@ sns.boxplot(x='quality', y='alcohol', data=wine, hue='quality', palette='viridis
 Ahora cuando ejecutes la celda, no verás más el warning y el gráfico seguirá teniendo colores diferentes para cada calidad del vino.
 
 
+significado "hue" en este codigo 
+------------------------------------------
+**`hue`** en español significa **"matiz"** o **"tonalidad"**.
+
+En el contexto de seaborn y visualización de datos:
+
+## 🎨 **Significado de `hue`:**
+
+- **Traducción literal**: Matiz, tonalidad, tinte
+- **En visualización**: Variable que determina los colores
+- **Función**: Asigna diferentes colores basándose en los valores de una columna
+
+## 📊 **Ejemplo práctico:**
+
+```python
+sns.boxplot(x='quality', y='alcohol', data=wine, hue='quality')
+```
+
+**Explicación:**
+- `hue='quality'` le dice a seaborn: *"usa la columna 'quality' para asignar diferentes tonalidades/colores"*
+- Cada valor único en 'quality' (3, 4, 5, 6, 7, 8) recibirá un color diferente
+- Es como decir: *"colorea según la calidad"*
+
+## 🌈 **En resumen:**
+- **hue** = **matiz/tonalidad**
+- **Función**: Controla qué variable determina los colores del gráfico
+- **Resultado**: Cada categoría obtiene un color distintivo
+
+¡Es una palabra muy usada en el mundo del color y diseño gráfico!
